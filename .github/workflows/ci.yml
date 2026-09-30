@@ -1,0 +1,192 @@
+name: CarePath Continuous Integration & Production Verification
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ============================================================================
+  # 1. Backend CI: Java 21, Spring Boot 3, PostgreSQL, Tests & JaCoCo
+  # ============================================================================
+  backend-ci:
+    name: Backend Tests & Spring Quality Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: carepath
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d carepath"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21 (Eclipse Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Make Maven Wrapper Executable
+        run: chmod +x ./backend/mvnw || true
+
+      - name: Run Backend Unit & Integration Tests
+        working-directory: ./backend
+        env:
+          SPRING_PROFILES_ACTIVE: test
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/carepath
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+          JWT_SECRET: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+        run: |
+          if [ -f "./mvnw" ]; then
+            ./mvnw clean test -B
+          else
+            mvn clean test -B
+          fi
+
+      - name: Verify JaCoCo Coverage Report
+        working-directory: ./backend
+        run: |
+          if [ -f "target/site/jacoco/index.html" ]; then
+            echo "JaCoCo coverage report generated successfully."
+          else
+            echo "JaCoCo report not found, but build completed."
+          fi
+
+  # ============================================================================
+  # 2. ML Microservice CI: Python 3.12, scikit-learn, TreeSHAP, Pytest
+  # ============================================================================
+  ml-service-ci:
+    name: ML Microservice & TreeSHAP Verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: ml_service/requirements.txt
+
+      - name: Install Dependencies
+        working-directory: ./ml_service
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pytest
+
+      - name: Verify Pre-Trained Model Artifacts
+        working-directory: ./ml_service
+        run: |
+          python -c "from app.services.model_registry import model_registry; model_registry.load(); assert model_registry.is_loaded, 'Model failed to load'; print('Model verified: ' + str(model_registry.metadata.get('model_version')))"
+
+      - name: Run Pytest Test Suite
+        working-directory: ./ml_service
+        run: python -m pytest tests/ -v
+
+  # ============================================================================
+  # 3. Frontend CI: Node 20, TypeScript, Vitest, Vite Build
+  # ============================================================================
+  frontend-ci:
+    name: Frontend Tests, Typecheck & Production Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: TypeScript Type Check
+        working-directory: ./frontend
+        run: npx tsc --noEmit
+
+      - name: Run Vitest Unit & E2E Suites
+        working-directory: ./frontend
+        run: npm test
+
+      - name: Build Production Distribution Bundle
+        working-directory: ./frontend
+        run: npm run build
+
+  # ============================================================================
+  # 4. Container Build & Compose Quality Gate
+  # ============================================================================
+  docker-build-ci:
+    name: Production Docker Build & Stack Validation
+    needs: [ backend-ci, ml-service-ci, frontend-ci ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Validate Production Docker Compose Syntax
+        env:
+          DB_NAME: carepath
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgrespassword
+          JWT_SECRET: ProductionJwtSecretKeyMustBeAtLeast256BitsLongForHmacSha256SecurityValidation
+        run: |
+          docker compose -f docker-compose.prod.yml config
+
+      - name: Build ML Microservice Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./ml_service
+          file: ./ml_service/Dockerfile
+          push: false
+          tags: carepath-ml-service:ci
+
+      - name: Build Backend Service Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: false
+          tags: carepath-backend:ci
+
+      - name: Build Frontend Service Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: false
+          tags: carepath-frontend:ci

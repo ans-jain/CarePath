@@ -1,0 +1,109 @@
+services:
+  # ==============================================================================
+  # 1. PostgreSQL Database
+  # ==============================================================================
+  postgres:
+    image: postgres:17-alpine
+    container_name: carepath-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-carepath}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_NAME:-carepath}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - carepath-network
+
+  # ==============================================================================
+  # 2. CarePath Machine Learning Microservice (FastAPI + TreeSHAP)
+  # ==============================================================================
+  carepath-ml-service:
+    build:
+      context: ./ml_service
+      dockerfile: Dockerfile
+    container_name: carepath-ml-service
+    restart: unless-stopped
+    environment:
+      PYTHONUNBUFFERED: "1"
+      PORT: "8000"
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/ml/v1/health/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - carepath-network
+
+  # ==============================================================================
+  # 3. CarePath Core Backend (Spring Boot 3.4.3 + Java 21)
+  # ==============================================================================
+  carepath-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: carepath-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      carepath-ml-service:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-carepath}
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      ML_SERVICE_URL: http://carepath-ml-service:8000
+      JWT_SECRET: ${JWT_SECRET:-CarePathUltraSecureJwtSecretKeyMustBeAtLeast256BitsLongForHmacSha256SecurityValidation}
+      SPRING_PROFILES_ACTIVE: prod
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/health/ready || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 35s
+    networks:
+      - carepath-network
+
+  # ==============================================================================
+  # 4. CarePath Frontend UI (React 18 + Vite + Tailwind + Nginx)
+  # ==============================================================================
+  carepath-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: carepath-frontend
+    restart: unless-stopped
+    depends_on:
+      carepath-backend:
+        condition: service_healthy
+    ports:
+      - "3000:80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - carepath-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  carepath-network:
+    driver: bridge

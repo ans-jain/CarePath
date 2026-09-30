@@ -1,0 +1,121 @@
+# ==============================================================================
+# CarePath Production Docker Compose Configuration (docker-compose.prod.yml)
+# Usage: docker compose -f docker-compose.prod.yml --env-file .env up -d
+# ==============================================================================
+
+services:
+  # ==============================================================================
+  # 1. PostgreSQL Relational Database (Internal Only - No Public Port Exposure)
+  # ==============================================================================
+  postgres:
+    image: postgres:17-alpine
+    container_name: carepath-postgres-prod
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME:?Database name must be specified}
+      POSTGRES_USER: ${DB_USERNAME:?Database user must be specified}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Database password must be specified}
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - carepath-internal-network
+    # Port 5432 is deliberately NOT published to the host for production security
+
+  # ==============================================================================
+  # 2. CarePath ML Microservice (FastAPI + TreeSHAP) (Internal Only)
+  # ==============================================================================
+  carepath-ml-service:
+    build:
+      context: ./ml_service
+      dockerfile: Dockerfile
+    container_name: carepath-ml-service-prod
+    restart: always
+    environment:
+      PYTHONUNBUFFERED: "1"
+      PORT: "8000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/ml/v1/health/ready || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - carepath-internal-network
+    # Port 8000 is internal only; accessed by backend and frontend reverse proxy
+
+  # ==============================================================================
+  # 3. CarePath Core Backend (Spring Boot 3.4.3 / Java 21) (Internal Only)
+  # ==============================================================================
+  carepath-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: carepath-backend-prod
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      carepath-ml-service:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      ML_SERVICE_URL: http://carepath-ml-service:8000
+      JWT_SECRET: ${JWT_SECRET:?JWT secret must be specified}
+      JWT_ACCESS_TOKEN_EXPIRATION_MS: ${JWT_ACCESS_TOKEN_EXPIRATION_MS:-900000}
+      JWT_REFRESH_TOKEN_EXPIRATION_MS: ${JWT_REFRESH_TOKEN_EXPIRATION_MS:-604800000}
+      APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS:-https://app.carepath.io}
+      RATE_LIMITING_ENABLED: ${RATE_LIMITING_ENABLED:-true}
+      RATE_LIMIT_AUTH_PER_MIN: ${RATE_LIMIT_AUTH_PER_MIN:-15}
+      RATE_LIMIT_ML_PER_MIN: ${RATE_LIMIT_ML_PER_MIN:-45}
+      RATE_LIMIT_DEFAULT_PER_MIN: ${RATE_LIMIT_DEFAULT_PER_MIN:-100}
+      EMAIL_PROVIDER: ${EMAIL_PROVIDER:-console}
+      EMAIL_FROM: ${EMAIL_FROM:-noreply@carepath.io}
+      NOTIFICATIONS_REMINDERS_ENABLED: ${NOTIFICATIONS_REMINDERS_ENABLED:-true}
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/health/ready || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    networks:
+      - carepath-internal-network
+    # Port 8080 is internal only; traffic routes through frontend reverse proxy
+
+  # ==============================================================================
+  # 4. CarePath Web & Reverse Proxy (NGINX + React SPA) (Public Edge)
+  # ==============================================================================
+  carepath-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: carepath-frontend-prod
+    restart: always
+    depends_on:
+      carepath-backend:
+        condition: service_healthy
+    ports:
+      - "${HTTP_PORT:-80}:80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - carepath-internal-network
+
+volumes:
+  postgres_prod_data:
+    driver: local
+
+networks:
+  carepath-internal-network:
+    driver: bridge

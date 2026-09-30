@@ -1,0 +1,68 @@
+# Developer tools & Binaries
+.tools/
+*.zip
+*.tar.gz
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle
+build/
+
+# IDE & OS
+.idea/
+*.iml
+.vscode/
+*.ipr
+*.iws
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Environment variables
+.env
+.env.*
+!.env.example
+*.env
+
+# Certificates, keys and credentials
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+credentials.json
+
+# Node & Frontend (for later phases)
+node_modules/
+dist/
+dist-ssr/
+.vite/
+*.local
+
+# Python & ML (for later phases)
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+

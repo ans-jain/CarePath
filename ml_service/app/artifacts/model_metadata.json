@@ -1,0 +1,56 @@
+{
+  "model_name": "carepath-cardiometabolic-risk",
+  "model_version": "carepath-gbm-v1.0.0",
+  "algorithm": "HistGradientBoostingClassifier + CalibratedClassifierCV(method=sigmoid, cv=5)",
+  "training_timestamp": "2026-09-28T04:43:10.259051+00:00",
+  "dataset_version": "synthetic-nhanes-framingham-v1",
+  "dataset_samples": 500,
+  "train_samples": 400,
+  "test_samples": 100,
+  "class_distribution": {
+    "negative_samples": 375,
+    "positive_samples": 125,
+    "positive_rate": 0.25
+  },
+  "feature_columns": [
+    "age",
+    "biological_sex",
+    "bmi",
+    "smoking_status",
+    "systolic_bp_current",
+    "diastolic_bp_current",
+    "heart_rate_current",
+    "fasting_glucose_current",
+    "hba1c_current",
+    "cholesterol_total",
+    "cholesterol_hdl",
+    "cholesterol_ldl",
+    "triglycerides",
+    "sleep_hours_current",
+    "systolic_bp_ewma_delta",
+    "fasting_glucose_ewma_delta",
+    "systolic_bp_slope_14d",
+    "fasting_glucose_slope_14d"
+  ],
+  "features_count": 18,
+  "calibrated": true,
+  "evaluation_metrics": {
+    "roc_auc": 0.776,
+    "pr_auc": 0.583,
+    "brier_score": 0.1542,
+    "accuracy": 0.79,
+    "precision": 0.625,
+    "recall": 0.4,
+    "f1_score": 0.4878,
+    "confusion_matrix": [
+      [
+        69,
+        6
+      ],
+      [
+        15,
+        10
+      ]
+    ]
+  }
+}
