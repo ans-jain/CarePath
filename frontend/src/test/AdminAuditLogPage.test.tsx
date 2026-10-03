@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import React from 'react';
 import { AdminAuditLogPage } from '../pages/AdminAuditLogPage';
 import { AuthProvider } from '../context/AuthContext';
@@ -114,7 +114,10 @@ describe('AdminAuditLogPage', () => {
     // Check table contents
     expect(screen.getByText('FORBIDDEN_ACCESS')).toBeInTheDocument();
     expect(screen.getAllByText('LOGIN_SUCCESS').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText('dr.marcus@carepath.io')).toBeInTheDocument();
-    expect(screen.getByText('BLOCKED (403)')).toBeInTheDocument();
+
+    const forbiddenRow = screen.getByText('FORBIDDEN_ACCESS').closest('tr');
+    expect(forbiddenRow).not.toBeNull();
+    expect(within(forbiddenRow!).getByText('dr.marcus@carepath.io')).toBeInTheDocument();
+    expect(within(forbiddenRow!).getByText('BLOCKED (403)')).toBeInTheDocument();
   });
 });
