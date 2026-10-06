@@ -211,6 +211,8 @@ The automated CI workflow is configured under `.github/workflows/ci.yml`:
 - [`docs/PRODUCTION_READINESS.md`](file:///c:/Users/Aditi/OneDrive/Desktop/Projects/CarePath/docs/PRODUCTION_READINESS.md): Production checklist, SLA benchmarks, and FMEA analysis.
 - [`docs/DEPLOYMENT.md`](file:///c:/Users/Aditi/OneDrive/Desktop/Projects/CarePath/docs/DEPLOYMENT.md): Detailed production deployment and operations guide.
 
+
+
 ## Author
 
 **Anshika**
