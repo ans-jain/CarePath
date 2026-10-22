@@ -5,7 +5,6 @@ import {
   Lock,
   Mail,
   ArrowLeft,
-  CheckCircle2,
   AlertCircle,
   ShieldCheck,
   Server
@@ -20,7 +19,7 @@ export const AdminAuthPage: React.FC<AdminAuthPageProps> = ({
   onBackToRoles,
   onAuthSuccess,
 }) => {
-  const { login, switchDemoPersona } = useAuth();
+  const { login } = useAuth();
   const [email, setEmail] = useState<string>('admin@carepath.io');
   const [password, setPassword] = useState<string>('AdminMaster123!');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -39,11 +38,6 @@ export const AdminAuthPage: React.FC<AdminAuthPageProps> = ({
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleDemoAdminLogin = () => {
-    switchDemoPersona('ADMIN');
-    onAuthSuccess();
   };
 
   return (
@@ -127,21 +121,6 @@ export const AdminAuthPage: React.FC<AdminAuthPageProps> = ({
           >
             {isLoading ? 'Verifying Authorization...' : 'Sign In as Administrator'}
           </button>
-
-          {/* Quick Demo Access */}
-          <div className="pt-4 border-t border-slate-100">
-            <span className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider text-center mb-2">
-              Instant Administrator Testing
-            </span>
-            <button
-              type="button"
-              onClick={handleDemoAdminLogin}
-              className="w-full p-2.5 text-xs font-medium text-purple-900 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg transition-colors flex items-center justify-center gap-1.5"
-            >
-              <CheckCircle2 className="w-3.5 h-3.5 text-purple-600" />
-              <span>Continue as Administrator (Demo Admin)</span>
-            </button>
-          </div>
         </form>
       </div>
     </div>

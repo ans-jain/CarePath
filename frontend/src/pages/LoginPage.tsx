@@ -7,7 +7,7 @@ interface LoginPageProps {
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
-  const { login, register, switchDemoPersona } = useAuth();
+  const { login, register } = useAuth();
   const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState('patient.sarah@carepath.io');
   const [password, setPassword] = useState('SecurePass123!');
@@ -39,11 +39,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleQuickDemoLogin = (role: 'PATIENT' | 'CLINICIAN') => {
-    switchDemoPersona(role);
-    onLoginSuccess();
   };
 
   return (
@@ -137,29 +132,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
             >
               {isRegister ? 'Already have an account? Sign in' : "Don't have an account? Register"}
             </button>
-          </div>
-
-          {/* Quick Demo Access Buttons */}
-          <div className="pt-4 border-t border-slate-100">
-            <span className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider text-center mb-2.5">
-              Quick Demo Personas (One-Click)
-            </span>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => handleQuickDemoLogin('PATIENT')}
-                className="p-2 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors"
-              >
-                Sarah (Patient)
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickDemoLogin('CLINICIAN')}
-                className="p-2 text-xs font-medium text-clinical-800 bg-clinical-50 hover:bg-clinical-100 border border-clinical-200 rounded-lg transition-colors"
-              >
-                Dr. Marcus (Clinician)
-              </button>
-            </div>
           </div>
         </form>
       </div>

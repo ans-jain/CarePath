@@ -294,7 +294,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenHowItWorks }
         {/* Clinical Disclaimer Banner */}
         <AlertBanner
           type="disclaimer"
-          message="CarePath provides decision-support risk signals, TreeSHAP feature attributions, and simulated counterfactual targets. It does NOT diagnose diseases, prescribe medication, or claim to replace clinical judgment. Consult the patient directly for diagnostic evaluations."
+          message="CarePath provides decision-support risk signals. It does NOT diagnose diseases, prescribe medication, or claim to replace clinical judgment. Consult the patient directly for diagnostic evaluations."
         />
 
         {/* Scoped Privacy Indicator */}

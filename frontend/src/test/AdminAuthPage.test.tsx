@@ -47,7 +47,7 @@ describe('AdminAuthPage', () => {
     // Sign in inputs and buttons
     expect(screen.getByPlaceholderText('admin@carepath.io')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Sign In as Administrator/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Continue as Administrator \(Demo Admin\)/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Continue as Administrator/i })).not.toBeInTheDocument();
   });
 
   it('navigates back to role selection when clicking back button', () => {

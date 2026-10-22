@@ -53,7 +53,7 @@ describe('Role-Based Routing & Access Control Guards', () => {
     render(<App />);
 
     expect(screen.getByText('Patient Health Portal')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Continue as Sarah/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Sign In to Patient Portal/i })).toBeInTheDocument();
   });
 
   it('renders DoctorAuthPage when navigating to /auth/doctor', async () => {
@@ -71,7 +71,7 @@ describe('Role-Based Routing & Access Control Guards', () => {
     render(<App />);
 
     expect(screen.getByText('Clinician & Doctor Portal')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Continue as Dr. Marcus/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Sign In to Doctor Dashboard/i })).toBeInTheDocument();
   });
 
   it('renders AdminAuthPage with restricted warning when navigating to /auth/admin', async () => {

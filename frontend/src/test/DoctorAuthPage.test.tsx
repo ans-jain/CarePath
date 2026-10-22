@@ -24,7 +24,7 @@ describe('DoctorAuthPage', () => {
     });
   });
 
-  it('renders Doctor Sign In tab by default with demo doctor shortcut', () => {
+  it('renders Doctor Sign In tab by default without demo shortcut', () => {
     render(
       <DoctorAuthPage
         onBackToRoles={mockOnBackToRoles}
@@ -36,7 +36,7 @@ describe('DoctorAuthPage', () => {
     expect(screen.getByRole('button', { name: 'Doctor Sign In' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Register as Doctor' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Sign In to Doctor Dashboard/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Continue as Dr. Marcus/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Continue as Dr. Marcus/i })).not.toBeInTheDocument();
   });
 
   it('displays pending approval error message when logging in with a pending account', async () => {

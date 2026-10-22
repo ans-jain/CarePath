@@ -10,7 +10,6 @@ import {
   Building2,
   FileBadge2,
   ArrowLeft,
-  CheckCircle2,
   Clock,
   AlertCircle,
   XCircle,
@@ -28,7 +27,7 @@ export const DoctorAuthPage: React.FC<DoctorAuthPageProps> = ({
   onBackToRoles,
   onAuthSuccess,
 }) => {
-  const { login, switchDemoPersona } = useAuth();
+  const { login } = useAuth();
   const [isRegister, setIsRegister] = useState<boolean>(initialMode === 'register');
   
   // Registration form fields
@@ -125,11 +124,6 @@ export const DoctorAuthPage: React.FC<DoctorAuthPageProps> = ({
         setIsLoading(false);
       }
     }
-  };
-
-  const handleDemoDoctorLogin = () => {
-    switchDemoPersona('CLINICIAN');
-    onAuthSuccess();
   };
 
   return (
@@ -420,21 +414,6 @@ export const DoctorAuthPage: React.FC<DoctorAuthPageProps> = ({
                 ? 'Submit Doctor Registration for Approval'
                 : 'Sign In to Doctor Dashboard'}
             </button>
-
-            {/* Quick Demo Access for Dr. Marcus */}
-            <div className="pt-4 border-t border-slate-100">
-              <span className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider text-center mb-2">
-                Instant Clinician Testing
-              </span>
-              <button
-                type="button"
-                onClick={handleDemoDoctorLogin}
-                className="w-full p-2.5 text-xs font-medium text-clinical-900 bg-clinical-50 hover:bg-clinical-100 border border-clinical-200 rounded-lg transition-colors flex items-center justify-center gap-1.5"
-              >
-                <CheckCircle2 className="w-3.5 h-3.5 text-clinical-600" />
-                <span>Continue as Dr. Marcus (Active Demo Doctor)</span>
-              </button>
-            </div>
           </form>
         )}
       </div>

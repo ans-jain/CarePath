@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Heart, Lock, Mail, User as UserIcon, ArrowLeft, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Heart, Lock, Mail, User as UserIcon, ArrowLeft, ShieldCheck } from 'lucide-react';
 
 interface PatientAuthPageProps {
   initialMode?: 'login' | 'register';
@@ -13,7 +13,7 @@ export const PatientAuthPage: React.FC<PatientAuthPageProps> = ({
   onBackToRoles,
   onAuthSuccess,
 }) => {
-  const { login, register, switchDemoPersona } = useAuth();
+  const { login, register } = useAuth();
   const [isRegister, setIsRegister] = useState<boolean>(initialMode === 'register');
   const [email, setEmail] = useState<string>('patient.sarah@carepath.io');
   const [password, setPassword] = useState<string>('SecurePass123!');
@@ -60,11 +60,6 @@ export const PatientAuthPage: React.FC<PatientAuthPageProps> = ({
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleDemoPatientLogin = () => {
-    switchDemoPersona('PATIENT');
-    onAuthSuccess();
   };
 
   return (
@@ -233,21 +228,6 @@ export const PatientAuthPage: React.FC<PatientAuthPageProps> = ({
               ? 'Complete Patient Registration'
               : 'Sign In to Patient Portal'}
           </button>
-
-          {/* Quick Demo Access */}
-          <div className="pt-4 border-t border-slate-100">
-            <span className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider text-center mb-2">
-              Instant Patient Testing
-            </span>
-            <button
-              type="button"
-              onClick={handleDemoPatientLogin}
-              className="w-full p-2.5 text-xs font-medium text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors flex items-center justify-center gap-1.5"
-            >
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Continue as Sarah (Demo Patient)</span>
-            </button>
-          </div>
         </form>
       </div>
     </div>
