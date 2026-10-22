@@ -46,6 +46,8 @@ logs/
 *.pfx
 *.p12
 credentials.json
+JWT.txt
+jwt.txt
 
 # Node & Frontend (for later phases)
 node_modules/

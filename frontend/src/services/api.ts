@@ -39,13 +39,29 @@ export async function requestJson<T>(
       headers,
     });
 
-    const contentType = response.headers?.get ? response.headers.get('content-type') : null;
-    const isJson = contentType ? contentType.includes('application/json') : (typeof response.json === 'function');
-    const data = isJson && typeof response.json === 'function' ? await response.json() : await response.text();
+    let data: any = null;
+    if (typeof response.text === 'function') {
+      const rawText = await response.text();
+      if (rawText && rawText.trim().length > 0) {
+        try {
+          data = JSON.parse(rawText);
+        } catch {
+          data = rawText;
+        }
+      }
+    } else if (typeof response.json === 'function') {
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
+    }
 
     if (!response.ok) {
       let errorMessage = 'An unexpected server error occurred.';
-      if (response.status === 503) {
+      if (response.status === 404) {
+        errorMessage = 'Endpoint not found (404). Service is unreachable or not deployed on this host.';
+      } else if (response.status === 503) {
         errorMessage = 'Model service is initializing or model is not loaded yet.';
       } else if (typeof data === 'object' && data !== null) {
         if (Array.isArray(data.validationErrors) && data.validationErrors.length > 0) {
@@ -73,6 +89,11 @@ export async function requestJson<T>(
       }
 
       throw new ApiError(errorMessage, response.status, data);
+    }
+
+    if (data === null) {
+      // In static CDN deployments (e.g. Render Static Sites), POST to an API path returns 200 with 0 bytes.
+      throw new ApiError('Service returned an empty response. Backend is unreachable on this host.', response.status);
     }
 
     return data as T;
