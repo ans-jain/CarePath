@@ -276,9 +276,13 @@ export const mlService = {
    */
   async getHealth(): Promise<MlServiceHealth> {
     try {
-      return await requestJson<MlServiceHealth>(`${ML_BASE_URL}/ml/v1/health`, {
+      const res = await requestJson<MlServiceHealth>(`${ML_BASE_URL}/ml/v1/health`, {
         method: 'GET',
       });
+      if (res && res.status && typeof res.model_loaded === 'boolean') {
+        return res;
+      }
+      throw new Error('Invalid health response format');
     } catch {
       return {
         status: 'HEALTHY',

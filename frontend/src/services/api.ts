@@ -96,6 +96,15 @@ export async function requestJson<T>(
       throw new ApiError('Service returned an empty response. Backend is unreachable on this host.', response.status);
     }
 
+    // In static SPA deployments (e.g. Render with /* -> /index.html rewrite), unhandled API endpoints return the HTML document with 200 OK
+    const contentType = response.headers?.get ? response.headers.get('content-type') : null;
+    const isHtml = (contentType && contentType.includes('text/html')) ||
+      (typeof data === 'string' && (data.trim().startsWith('<!doctype') || data.trim().startsWith('<html') || data.trim().startsWith('<!DOCTYPE')));
+
+    if (isHtml) {
+      throw new ApiError('Received HTML page instead of API JSON. Service endpoint is unreachable or rewritten by static SPA router.', 404, data);
+    }
+
     return data as T;
   } catch (err: any) {
     if (err instanceof ApiError) {
