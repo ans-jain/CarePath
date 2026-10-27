@@ -341,7 +341,6 @@ export const App: React.FC = () => {
             </span>
           </div>
           <div className="flex items-center gap-4 text-slate-400">
-            <span>Model: Calibrated Gradient Boosting (TreeSHAP)</span>
             <span>&bull;</span>
             <span>&copy; {new Date().getFullYear()} CarePath Health Inc.</span>
           </div>
