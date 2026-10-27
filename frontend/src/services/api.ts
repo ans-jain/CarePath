@@ -2,9 +2,10 @@ const ML_BASE_URL = import.meta.env.VITE_ML_URL !== undefined
   ? import.meta.env.VITE_ML_URL
   : (import.meta.env.PROD ? '' : 'http://127.0.0.1:8000');
 
-const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL !== undefined
-  ? import.meta.env.VITE_BACKEND_URL
-  : (import.meta.env.PROD ? '/api/v1' : 'http://127.0.0.1:8080/api/v1');
+const BACKEND_BASE_URL = (
+  import.meta.env.VITE_BACKEND_URL ||
+  (import.meta.env.PROD ? 'https://carepath-backend-82lh.onrender.com/api/v1' : 'http://127.0.0.1:8080/api/v1')
+).replace(/\/+$/, '');
 
 export class ApiError extends Error {
   status: number;
@@ -33,10 +34,14 @@ export async function requestJson<T>(
     ...(options.headers || {}),
   };
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 25000);
+
   try {
     const response = await fetch(url, {
       ...options,
       headers,
+      signal: options.signal || controller.signal,
     });
 
     let data: any = null;
@@ -110,11 +115,16 @@ export async function requestJson<T>(
     if (err instanceof ApiError) {
       throw err;
     }
+    if (err?.name === 'AbortError') {
+      throw new ApiError('Request timed out after 25s. The backend server might be waking up from sleep. Please try again.', 408);
+    }
     // Network or CORS failure
     throw new ApiError(
-      err.message || 'Network connection failed. Ensure the ML and backend services are running.',
+      err.message || 'Network connection failed. Ensure the backend service is running and CORS allows this domain.',
       0
     );
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 

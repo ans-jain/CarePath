@@ -166,87 +166,18 @@ export const authService = {
   },
 
   async register(data: RegisterRequest): Promise<AuthResponse> {
-    try {
-      await requestJson<any>(`${BACKEND_BASE_URL}/auth/register`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
-      return await this.login({ email: data.email, password: data.password });
-    } catch (err) {
-      // Fallback: register patient locally in browser storage
-      const email = data.email.trim().toLowerCase();
-      const newUser: User = {
-        id: `patient-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-        email,
-        firstName: data.firstName.trim(),
-        lastName: data.lastName.trim(),
-        role: 'ROLE_PATIENT',
-      };
-
-      saveLocalUser(newUser, data.password);
-
-      const authResponse: AuthResponse = {
-        accessToken: `demo_jwt_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
-        tokenType: 'Bearer',
-        expiresIn: 86400,
-        user: newUser,
-      };
-
-      localStorage.setItem(TOKEN_KEY, authResponse.accessToken);
-      localStorage.setItem(USER_KEY, JSON.stringify(authResponse.user));
-      return authResponse;
-    }
+    await requestJson<any>(`${BACKEND_BASE_URL}/auth/register`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return await this.login({ email: data.email, password: data.password });
   },
 
   async registerDoctor(data: DoctorRegisterRequest): Promise<DoctorRegisterResponse> {
-    try {
-      const response = await requestJson<DoctorRegisterResponse>(`${BACKEND_BASE_URL}/auth/doctor/register`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
-      return response;
-    } catch (err) {
-      const email = data.email.trim().toLowerCase();
-      const requestId = `doc-req-${Date.now()}`;
-      const doctorItem = {
-        id: requestId,
-        userId: `doctor-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-        name: `Dr. ${data.firstName.trim()} ${data.lastName.trim()}`,
-        firstName: data.firstName.trim(),
-        lastName: data.lastName.trim(),
-        email,
-        licenseNumber: data.licenseNumber.trim(),
-        specialization: data.specialization.trim(),
-        hospitalOrganization: data.hospitalOrganization.trim(),
-        phone: data.phone.trim(),
-        registrationDate: new Date().toISOString(),
-        status: 'PENDING',
-      };
-
-      // Add to admin requests queue for approval/rejection
-      saveDoctorRequestLocally(doctorItem);
-
-      // Save user record for future login after approval
-      saveLocalUser(
-        {
-          id: doctorItem.userId,
-          email,
-          firstName: data.firstName.trim(),
-          lastName: data.lastName.trim(),
-          role: 'ROLE_CLINICIAN',
-        },
-        data.password,
-        'PENDING'
-      );
-
-      return {
-        userId: doctorItem.userId,
-        email,
-        role: 'ROLE_CLINICIAN',
-        status: 'PENDING',
-        message: 'Registration submitted successfully and is pending administrative approval.',
-      };
-    }
+    return await requestJson<DoctorRegisterResponse>(`${BACKEND_BASE_URL}/auth/doctor/register`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
   },
 
   getCurrentUser(): User | null {

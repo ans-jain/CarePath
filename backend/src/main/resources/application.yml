@@ -63,7 +63,7 @@ jwt:
 
 app:
   cors:
-    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173}
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173,https://carepath-4zdx.onrender.com}
   security:
     rate-limiting:
       enabled: ${RATE_LIMITING_ENABLED:true}
