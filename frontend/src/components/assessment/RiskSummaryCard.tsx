@@ -15,25 +15,25 @@ const TIER_CONFIG: Record<
     label: 'Low Cardiometabolic Risk',
     badgeClass: 'bg-emerald-50 text-emerald-800 border-emerald-200',
     barColor: 'bg-emerald-500',
-    description: 'Patient biomarkers reside comfortably within empirical reference cohort ranges.',
+    description: 'Your results indicate a low estimated cardiometabolic risk.',
   },
   MODERATE: {
     label: 'Moderate Risk',
     badgeClass: 'bg-amber-50 text-amber-800 border-amber-200',
     barColor: 'bg-amber-500',
-    description: 'Early metabolic or vascular drift detected; monitored lifestyle support recommended.',
+    description: 'Your results indicate a moderate estimated cardiometabolic risk.',
   },
   ELEVATED: {
     label: 'Elevated Risk',
     badgeClass: 'bg-orange-50 text-orange-800 border-orange-200',
     barColor: 'bg-orange-500',
-    description: 'Multiple biometric signals deviate significantly from personal baseline corridors.',
+    description: 'Your results indicate an elevated estimated cardiometabolic risk.',
   },
   HIGH: {
     label: 'High Risk',
     badgeClass: 'bg-rose-50 text-rose-800 border-rose-200',
     barColor: 'bg-rose-500',
-    description: 'High statistical probability of cardiometabolic decompensation within 3-year horizon.',
+    description: 'Your results indicate a hig estimated cardiometabolic risk.',
   },
 };
 

@@ -94,8 +94,7 @@ export const AssessmentHistorySection: React.FC<AssessmentHistorySectionProps> =
         </div>
         <h3 className="text-lg font-bold text-slate-900 mb-1">No Assessment History Yet</h3>
         <p className="text-xs text-slate-500 max-w-md mx-auto mb-6 leading-relaxed">
-          You haven't completed any cardiometabolic risk assessments yet. When you run an assessment,
-          your multi-modal biometric results, TreeSHAP attributions, and downloadable PDF reports will be permanently archived here.
+          You haven't completed any risk assessments yet. 
         </p>
         <button
           type="button"
@@ -118,7 +117,7 @@ export const AssessmentHistorySection: React.FC<AssessmentHistorySectionProps> =
             <span>Patient Assessment History ({history.length})</span>
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Past evaluations archived in your profile. Select any assessment to view detailed TreeSHAP attributions or download a doctor-ready PDF report.
+            View detailed analysis or download a PDF report.
           </p>
         </div>
 
@@ -160,9 +159,6 @@ export const AssessmentHistorySection: React.FC<AssessmentHistorySectionProps> =
                   </div>
                   <div>
                     <span className="text-xs font-bold text-slate-800 block">{dateStr}</span>
-                    <span className="text-[11px] text-slate-400">
-                      Model: {item.modelVersion || 'Calibrated v1.0.0'} &bull; {item.confidenceLevel || 'Longitudinal Robust'}
-                    </span>
                   </div>
                 </div>
 
@@ -233,7 +229,7 @@ export const AssessmentHistorySection: React.FC<AssessmentHistorySectionProps> =
                     : item.response.explanation.summary_narrative}
                 </p>
                 <div className="flex items-center gap-1 text-clinical-600 font-semibold group-hover:text-clinical-700 text-xs shrink-0">
-                  <span>Inspect Full Attributions</span>
+                  <span>View Detailed Report</span>
                   <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                 </div>
               </div>

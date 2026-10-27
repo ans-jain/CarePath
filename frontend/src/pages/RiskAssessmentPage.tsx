@@ -152,9 +152,6 @@ export const RiskAssessmentPage: React.FC<RiskAssessmentPageProps> = ({ onOpenHo
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">
             Cardiometabolic Risk Assessment
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Explainable decision-support risk stratification powered by Calibrated Gradient Boosting and TreeSHAP.
-          </p>
         </div>
 
         {/* Tab Navigation: Run Assessment vs History */}
@@ -197,7 +194,7 @@ export const RiskAssessmentPage: React.FC<RiskAssessmentPageProps> = ({ onOpenHo
       {/* Mandatory Non-Diagnostic Clinical Disclaimer Banner */}
       <AlertBanner
         type="disclaimer"
-        message="CarePath provides decision-support risk signals, feature attributions, and simulated counterfactual targets. It does NOT diagnose diseases, prescribe medication, or replace a licensed physician. Consult a medical professional for clinical diagnosis."
+        message="CarePath does NOT diagnose diseases, prescribe medication, or replace a licensed physician. Consult a medical professional for clinical diagnosis."
       />
 
       {/* API Error State */}
@@ -213,8 +210,7 @@ export const RiskAssessmentPage: React.FC<RiskAssessmentPageProps> = ({ onOpenHo
       {/* Loading State */}
       {isLoading && (
         <LoadingSpinner
-          label="Evaluating 18 Biomarker Dimensions & Computing TreeSHAP..."
-          subLabel="Generating exact Shapley waterfall attributions, solving counterfactuals, and archiving to profile history..."
+          label="Evaluating your results. This might take a moment..."
         />
       )}
 
@@ -258,7 +254,7 @@ export const RiskAssessmentPage: React.FC<RiskAssessmentPageProps> = ({ onOpenHo
                       </span>
                     </div>
                     <p className="text-xs text-slate-500">
-                      Archived in your longitudinal history &bull; You can download a clinical PDF report for doctor consultations
+                      Archived in your history &bull; You can download a clinical PDF report for doctor consultations.
                     </p>
                   </div>
                 </div>

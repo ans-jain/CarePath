@@ -210,7 +210,7 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onSubmit, isLoading })
       <form onSubmit={handleSubmit} noValidate className="p-6 space-y-6">
         {/* Section 1: Demographics */}
         <div>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">1. Patient Demographics</h3>
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">1. Personal Details</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Age */}
             <div>
@@ -291,7 +291,7 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onSubmit, isLoading })
 
         {/* Section 2: Resting Vitals */}
         <div>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">2. Core Resting Vitals</h3>
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">2. Blood Pressure and Measurements</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Systolic BP */}
             <div>
@@ -382,7 +382,7 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onSubmit, isLoading })
         {/* Section 3: Lab Biomarkers */}
         <div>
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-            3. Serum Biomarkers & Lifestyle <span className="text-slate-400 font-normal lowercase">(imputed if omitted)</span>
+            3. Blood Tests & Lifestyle
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
             {/* HbA1c */}
@@ -495,8 +495,8 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onSubmit, isLoading })
             className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
           >
             {showAdvanced ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            <span>4. Advanced Longitudinal Baseline & Trend Dynamics</span>
-            <span className="text-[11px] text-slate-400 font-normal">(30-day EWMA deltas & 14-day OLS slopes)</span>
+            <span>4. Advanced Options</span>
+            
           </button>
 
           {showAdvanced && (
@@ -565,7 +565,7 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onSubmit, isLoading })
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
               <label htmlFor="select-topk" className="text-xs font-medium text-slate-600">
-                SHAP Top Drivers:
+                No. of Contributing factors:
               </label>
               <select
                 id="select-topk"
@@ -587,7 +587,7 @@ export const PatientForm: React.FC<PatientFormProps> = ({ onSubmit, isLoading })
                 onChange={(e) => setGenerateCounterfactuals(e.target.checked)}
                 className="w-4 h-4 rounded text-clinical-600 border-slate-300 focus:ring-clinical-500"
               />
-              <span>Generate Actionable Counterfactuals</span>
+              <span>Explore Health Improvements</span>
             </label>
           </div>
 
