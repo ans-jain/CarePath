@@ -1,3 +1,5 @@
+Deployed website link: https://carepath-4zdx.onrender.com
+
 # CarePath — Longitudinal Health Monitoring & Explainable Risk Analysis Platform
 
 **CarePath** is an enterprise-grade clinical decision-support platform providing longitudinal biomarker monitoring, calibrated cardiometabolic risk stratification, TreeSHAP explainability attributions, and constrained counterfactual lifestyle recommendations.
@@ -210,7 +212,6 @@ The automated CI workflow is configured under `.github/workflows/ci.yml`:
 - [`docs/SECURITY.md`](file:///c:/Users/Aditi/OneDrive/Desktop/Projects/CarePath/docs/SECURITY.md): RBAC, JWT, and audit logging.
 - [`docs/PRODUCTION_READINESS.md`](file:///c:/Users/Aditi/OneDrive/Desktop/Projects/CarePath/docs/PRODUCTION_READINESS.md): Production checklist, SLA benchmarks, and FMEA analysis.
 - [`docs/DEPLOYMENT.md`](file:///c:/Users/Aditi/OneDrive/Desktop/Projects/CarePath/docs/DEPLOYMENT.md): Detailed production deployment and operations guide.
-
 
 
 ## Author
