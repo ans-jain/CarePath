@@ -35,9 +35,6 @@ export const ShapWaterfall: React.FC<ShapWaterfallProps> = ({
             </div>
             <div>
               <h3 className="text-base font-bold text-slate-900">Why Did the Model Predict This Risk Score?</h3>
-              <p className="text-xs text-slate-500">
-                TreeSHAP feature attributions decomposing individual patient biomarker contributions.
-              </p>
             </div>
           </div>
 

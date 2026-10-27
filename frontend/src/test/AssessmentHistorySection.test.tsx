@@ -121,7 +121,7 @@ describe('AssessmentHistorySection', () => {
     expect(downloadSpy).toHaveBeenCalled();
 
     // Click card to view details
-    fireEvent.click(screen.getByText(/Inspect Full Attributions/i));
+    fireEvent.click(screen.getByText(/View Detailed Report/i));
     expect(handleSelect).toHaveBeenCalledWith(sampleItem);
   });
 });

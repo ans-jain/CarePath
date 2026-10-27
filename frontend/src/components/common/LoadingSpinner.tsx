@@ -7,8 +7,8 @@ interface LoadingSpinnerProps {
 }
 
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
-  label = 'Computing Cardiometabolic Risk & TreeSHAP Attributions...',
-  subLabel = 'Evaluating 18 biomarker dimensions and solving constrained counterfactual targets...',
+  label = 'Computing Cardiometabolic Risk...',
+  subLabel = 'Analyzing your health data and generating personalized insights...',
 }) => {
   return (
     <div
@@ -22,7 +22,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
       </div>
       <h3 className="text-base font-semibold text-slate-800 mb-1">{label}</h3>
       <p className="text-xs text-slate-500 max-w-md">{subLabel}</p>
-      <span className="sr-only">Loading risk assessment and explainability calculation...</span>
+      <span className="sr-only">Loading risk assessment...</span>
     </div>
   );
 };
